@@ -8,6 +8,64 @@ Forked From: https://github.com/borisputerka/github_billing_exporter because its
 This exporter exposes [Prometheus](https://prometheus.io/) metrics from GitHub billing API [endpoint](https://docs.github.com/en/free-pro-team@latest/rest/reference/billing) and the GitHub timing API [endpoint](https://docs.github.com/en/rest/reference/actions#get-workflow-usage).
 
 
+## Metrics
+```
+# HELP github_billing_actions_org_minutes_billed_count GitHub actions used minutes with platform multipliers
+# TYPE github_billing_actions_org_minutes_billed_count counter
+github_billing_actions_org_minutes_billed_count{org="<PLACEHOLDER>",platform="linux"} 12345
+github_billing_actions_org_minutes_billed_count{org="<PLACEHOLDER>",platform="macos"} 12345
+github_billing_actions_org_minutes_billed_count{org="<PLACEHOLDER>",platform="windows"} 12345
+# HELP github_billing_actions_org_minutes_inclusive GitHub actions inclusive budget minutes
+# TYPE github_billing_actions_org_minutes_inclusive gauge
+github_billing_actions_org_minutes_inclusive{org="<PLACEHOLDER>"} 5000
+# HELP github_billing_actions_org_minutes_paid_count Total GitHub actions minutes paid for
+# TYPE github_billing_actions_org_minutes_paid_count counter
+github_billing_actions_org_minutes_paid_count{org="<PLACEHOLDER>"} 12345
+# HELP github_billing_actions_org_minutes_real_count GitHub actions used minutes without platform multiplier
+# TYPE github_billing_actions_org_minutes_real_count counter
+github_billing_actions_org_minutes_real_count{org="<PLACEHOLDER>",platform="linux"} 12345
+github_billing_actions_org_minutes_real_count{org="<PLACEHOLDER>",platform="macos"} 12345
+github_billing_actions_org_minutes_real_count{org="<PLACEHOLDER>",platform="windows"} 12345
+# HELP github_billing_actions_org_minutes_total_count Total GitHub actions minutes used
+# TYPE github_billing_actions_org_minutes_total_count counter
+github_billing_actions_org_minutes_total_count{org="<PLACEHOLDER>"} 12345
+# HELP github_billing_actions_workflow_minutes_billed_count GitHub actions used minutes with platform multipliers
+# TYPE github_billing_actions_workflow_minutes_billed_count counter
+github_billing_actions_workflow_minutes_billed_count{org="<PLACEHOLDER>",platform="linux",repository="<PLACEHOLDER>",workflow_id="<PLACEHOLDER>",workflow_name="<PLACEHOLDER>"} 12345
+# HELP github_billing_actions_workflow_minutes_real_count GitHub actions used minutes without platform multiplier
+# TYPE github_billing_actions_workflow_minutes_real_count counter
+github_billing_actions_workflow_minutes_real_count{org="<PLACEHOLDER>",platform="linux",repository="<PLACEHOLDER>",workflow_id="<PLACEHOLDER>",workflow_name="<PLACEHOLDER>"} 12345
+# HELP github_billing_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which github_billing_exporter was built.
+# TYPE github_billing_exporter_build_info gauge
+github_billing_exporter_build_info{branch="",goversion="go1.17.13",revision="",version=""} 1
+# HELP github_billing_packages_org_bandwith_inclusive GitHub packages inclusive budget bandwith in gigabytes
+# TYPE github_billing_packages_org_bandwith_inclusive gauge
+github_billing_packages_org_bandwith_inclusive{org="<PLACEHOLDER>"} 1234
+# HELP github_billing_packages_org_bandwith_paid_count GitHub packages paid used bandwith in gigabytes
+# TYPE github_billing_packages_org_bandwith_paid_count counter
+github_billing_packages_org_bandwith_paid_count{org="<PLACEHOLDER>"} 1234
+# HELP github_billing_packages_org_bandwith_total_count GitHub packages total used bandwith in gigabytes
+# TYPE github_billing_packages_org_bandwith_total_count counter
+github_billing_packages_org_bandwith_total_count{org="<PLACEHOLDER>"} 1234
+# HELP github_billing_storage_org_billing_cycle_days Days left in the current billing cycle
+# TYPE github_billing_storage_org_billing_cycle_days gauge
+github_billing_storage_org_billing_cycle_days{org="<PLACEHOLDER>"} 1234
+# HELP github_billing_storage_org_paid_count GitHub storage used paid in gigabytes
+# TYPE github_billing_storage_org_paid_count counter
+github_billing_storage_org_paid_count{org="<PLACEHOLDER>"} 123.45
+# HELP github_billing_storage_org_total_count GitHub storage used total in gigabytes
+# TYPE github_billing_storage_org_total_count counter
+github_billing_storage_org_total_count{org="<PLACEHOLDER>"} 1234
+# HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+# TYPE promhttp_metric_handler_requests_in_flight gauge
+promhttp_metric_handler_requests_in_flight 1
+# HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+# TYPE promhttp_metric_handler_requests_total counter
+promhttp_metric_handler_requests_total{code="200"} 15631
+promhttp_metric_handler_requests_total{code="500"} 0
+promhttp_metric_handler_requests_total{code="503"} 0
+```
+
 ## Installation
 
 For pre-built binaries please take a look at the releases.
