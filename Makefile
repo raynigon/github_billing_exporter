@@ -1,6 +1,7 @@
-GO    := GO111MODULE=on go
-PROMU := $(shell $(GO) env GOPATH)/bin/promu
-pkgs   =  ./...
+GO    		 	:= GO111MODULE=on go
+FIRST_GOPATH 	:= $(firstword $(subst :, ,$(shell $(GO) env GOPATH)))
+PROMU 		 	:= $(FIRST_GOPATH)/bin/promu
+pkgs   			=  ./...
 
 PREFIX                  ?= $(shell pwd)
 BIN_DIR                 ?= $(shell pwd)
@@ -20,6 +21,8 @@ format:
 vet:
 	@echo ">> vetting code"
 	@$(GO) vet $(pkgs)
+
+test: format vet
 
 build: promu
 	@echo ">> building binaries"
