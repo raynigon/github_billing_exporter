@@ -1,6 +1,20 @@
 GO    		 	:= GO111MODULE=on go
+GOOPTS       ?=
+GOHOSTOS     ?= $(shell $(GO) env GOHOSTOS)
+GOHOSTARCH   ?= $(shell $(GO) env GOHOSTARCH)
 FIRST_GOPATH 	:= $(firstword $(subst :, ,$(shell $(GO) env GOPATH)))
+
+ifeq (arm, $(GOHOSTARCH))
+	GOHOSTARM ?= $(shell GOARM= $(GO) env GOARM)
+	GO_BUILD_PLATFORM ?= $(GOHOSTOS)-$(GOHOSTARCH)v$(GOHOSTARM)
+else
+	GO_BUILD_PLATFORM ?= $(GOHOSTOS)-$(GOHOSTARCH)
+endif
+
 PROMU 		 	:= $(FIRST_GOPATH)/bin/promu
+PROMU_VERSION 	?= 0.14.0
+PROMU_URL 		:= https://github.com/prometheus/promu/releases/download/v$(PROMU_VERSION)/promu-$(PROMU_VERSION).$(GO_BUILD_PLATFORM).tar.gz
+
 pkgs   			=  ./...
 
 PREFIX                  ?= $(shell pwd)
@@ -36,9 +50,13 @@ docker:
 	@echo ">> building docker image"
 	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
 
-promu:
-	@GOOS=$(shell uname -s | tr A-Z a-z) \
-		GOARCH=$(subst x86_64,amd64,$(patsubst i%86,386,$(shell uname -m))) \
-		$(GO) get -u github.com/prometheus/promu
+promu: $(PROMU)
+
+$(PROMU):
+	$(eval PROMU_TMP := $(shell mktemp -d))
+	curl -s -L $(PROMU_URL) | tar -xvzf - -C $(PROMU_TMP)
+	mkdir -p $(FIRST_GOPATH)/bin
+	cp $(PROMU_TMP)/promu-$(PROMU_VERSION).$(GO_BUILD_PLATFORM)/promu $(FIRST_GOPATH)/bin/promu
+	rm -r $(PROMU_TMP)
 
 .PHONY: all style format build test vet tarball docker promu
