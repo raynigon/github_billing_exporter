@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Promu
+        run: make promu
       - name: Build
         run: make build
   format:
@@ -19,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Promu
+        run: make promu
       - name: Format
         run: make format
   test:
@@ -26,5 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Promu
+        run: make promu
       - name: Test
         run: make test

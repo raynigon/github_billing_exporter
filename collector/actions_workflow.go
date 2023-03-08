@@ -14,10 +14,9 @@ var (
 )
 
 type WorkflowActionsCollector struct {
-	config            CollectorConfig
-	metrics           map[string]*gh_workflow.GitHubWorkflowMetrics
-	usedMinutesReal   *prometheus.Desc
-	usedMinutesBilled *prometheus.Desc
+	config          CollectorConfig
+	metrics         map[string]*gh_workflow.GitHubWorkflowMetrics
+	usedMinutesReal *prometheus.Desc
 }
 
 func init() {
@@ -32,12 +31,7 @@ func NewWorkflowActionsCollector(config CollectorConfig, ctx context.Context) (C
 		usedMinutesReal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, repoActionsSubsystem, "minutes_real_count"),
 			"GitHub actions used minutes without platform multiplier",
-			[]string{"org", "repository", "workflow_name", "workflow_id", "platform"}, nil,
-		),
-		usedMinutesBilled: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, repoActionsSubsystem, "minutes_billed_count"),
-			"GitHub actions used minutes with platform multipliers",
-			[]string{"org", "repository", "workflow_name", "workflow_id", "platform"}, nil,
+			[]string{"org", "repository", "workflow_name", "workflow_id", "type"}, nil,
 		),
 	}
 	err := collector.Reload(ctx)
@@ -50,7 +44,6 @@ func NewWorkflowActionsCollector(config CollectorConfig, ctx context.Context) (C
 // Describe implements Collector.
 func (wac *WorkflowActionsCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- wac.usedMinutesReal
-	ch <- wac.usedMinutesBilled
 }
 
 func (wac *WorkflowActionsCollector) Reload(ctx context.Context) error {
@@ -68,34 +61,18 @@ func (wac *WorkflowActionsCollector) Update(ctx context.Context, ch chan<- prome
 	for org, repoMetrics := range wac.metrics {
 		go func(org string, repoMetrics *gh_workflow.GitHubWorkflowMetrics) {
 			for _, workflow := range repoMetrics.CollectActions(ctx) {
-				// Convert milliseconds to minutes
-				realUsageLinux := 0.0
-				realUsageMacOS := 0.0
-				realUsageWindows := 0.0
-
-				if workflow.Usage.Billable.Ubuntu != nil {
-					realUsageLinux = float64(*workflow.Usage.Billable.Ubuntu.TotalMS) / 60_000.0
+				if workflow.Usage.Billable == nil {
+					continue
 				}
-				if workflow.Usage.Billable.MacOS != nil {
-					realUsageMacOS = float64(*workflow.Usage.Billable.MacOS.TotalMS) / 60_000.0
+				repoName := *workflow.Repository.Name
+				workflowName := *workflow.Workflow.Name
+				workflowId := strconv.FormatInt(*workflow.Workflow.ID, 10)
+				for name, value := range *workflow.Usage.Billable {
+					if value.TotalMS == nil {
+						continue
+					}
+					ch <- prometheus.MustNewConstMetric(wac.usedMinutesReal, prometheus.CounterValue, float64(*value.TotalMS)/60_000.0, org, repoName, workflowName, workflowId, name)
 				}
-				if workflow.Usage.Billable.Windows != nil {
-					realUsageWindows = float64(*workflow.Usage.Billable.Windows.TotalMS) / 60_000.0
-				}
-
-				// Use the real value in minutes
-				NewPlatformMetric(ch, wac.usedMinutesReal, prometheus.CounterValue, PlatformMetric{
-					Linux:   realUsageLinux,
-					MacOS:   realUsageMacOS,
-					Windows: realUsageWindows,
-				}, org, *workflow.Repository.Name, *workflow.Workflow.Name, strconv.FormatInt(*workflow.Workflow.ID, 10))
-				// Use the original billed values
-				// See Minute Multipliers https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions
-				NewPlatformMetric(ch, wac.usedMinutesBilled, prometheus.CounterValue, PlatformMetric{
-					Linux:   realUsageLinux * PlatformMultiplierLinux,
-					MacOS:   realUsageMacOS * PlatformMultiplierMacOS,
-					Windows: realUsageWindows * PlatformMultiplierWindows,
-				}, org, *workflow.Repository.Name, *workflow.Workflow.Name, strconv.FormatInt(*workflow.Workflow.ID, 10))
 			}
 			wg.Done()
 		}(org, repoMetrics)

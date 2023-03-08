@@ -15,7 +15,6 @@ var (
 type OrgActionsCollector struct {
 	config            CollectorConfig
 	metrics           map[string]*gh_org.GitHubOrgMetrics
-	usedMinutesReal   *prometheus.Desc
 	usedMinutesBilled *prometheus.Desc
 	inclusiveMinutes  *prometheus.Desc
 	usedMinutesTotal  *prometheus.Desc
@@ -31,15 +30,10 @@ func NewOrgActionsCollector(config CollectorConfig, ctx context.Context) (Collec
 	collector := &OrgActionsCollector{
 		config:  config,
 		metrics: make(map[string]*gh_org.GitHubOrgMetrics),
-		usedMinutesReal: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, orgActionsSubsystem, "minutes_real_count"),
-			"GitHub actions used minutes without platform multiplier",
-			[]string{"org", "platform"}, nil,
-		),
 		usedMinutesBilled: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, orgActionsSubsystem, "minutes_billed_count"),
-			"GitHub actions used minutes with platform multipliers",
-			[]string{"org", "platform"}, nil,
+			"GitHub actions used minutes with type multipliers",
+			[]string{"org", "type"}, nil,
 		),
 		inclusiveMinutes: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, orgActionsSubsystem, "minutes_inclusive"),
@@ -66,7 +60,6 @@ func NewOrgActionsCollector(config CollectorConfig, ctx context.Context) (Collec
 
 // Describe implements Collector.
 func (oac *OrgActionsCollector) Describe(ch chan<- *prometheus.Desc) {
-	ch <- oac.usedMinutesReal
 	ch <- oac.usedMinutesBilled
 	ch <- oac.inclusiveMinutes
 	ch <- oac.usedMinutesTotal
@@ -95,18 +88,11 @@ func (oac *OrgActionsCollector) Update(ctx context.Context, ch chan<- prometheus
 				return
 			}
 			// Use the original billed values
-			NewPlatformMetric(ch, oac.usedMinutesBilled, prometheus.CounterValue, PlatformMetric{
-				Linux:   float64(metrics.MinutesUsedBreakdown.Ubuntu),
-				MacOS:   float64(metrics.MinutesUsedBreakdown.MacOS),
-				Windows: float64(metrics.MinutesUsedBreakdown.Windows),
-			}, org)
-			// See Minute Multipliers https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions
-			NewPlatformMetric(ch, oac.usedMinutesReal, prometheus.CounterValue, PlatformMetric{
-				Linux:   float64(metrics.MinutesUsedBreakdown.Ubuntu) / PlatformMultiplierLinux,
-				MacOS:   float64(metrics.MinutesUsedBreakdown.MacOS) / PlatformMultiplierMacOS,
-				Windows: float64(metrics.MinutesUsedBreakdown.Windows) / PlatformMultiplierWindows,
-			}, org)
-			// Platform independent metrics
+			for name, value := range metrics.MinutesUsedBreakdown {
+				ch <- prometheus.MustNewConstMetric(oac.usedMinutesBilled, prometheus.CounterValue, float64(value), org, name)
+			}
+
+			// Type independent metrics
 			ch <- prometheus.MustNewConstMetric(oac.inclusiveMinutes, prometheus.GaugeValue, float64(metrics.IncludedMinutes), org)
 			ch <- prometheus.MustNewConstMetric(oac.usedMinutesTotal, prometheus.CounterValue, float64(metrics.TotalMinutesUsed), org)
 			ch <- prometheus.MustNewConstMetric(oac.usedMinutesPaid, prometheus.CounterValue, float64(metrics.TotalPaidMinutesUsed), org)
