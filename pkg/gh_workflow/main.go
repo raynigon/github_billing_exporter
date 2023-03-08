@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/google/go-github/v43/github"
+	"github.com/google/go-github/v50/github"
 )
 
 type GitHubWorkflowMetrics struct {

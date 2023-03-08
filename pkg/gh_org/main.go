@@ -3,7 +3,7 @@ package gh_org
 import (
 	"context"
 
-	"github.com/google/go-github/v43/github"
+	"github.com/google/go-github/v50/github"
 )
 
 type GitHubOrgMetrics struct {

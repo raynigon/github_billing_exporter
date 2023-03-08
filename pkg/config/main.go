@@ -29,15 +29,15 @@ func NewGitHubBillingExporterConfig() GitHubBillingExporterConfig {
 			Default("").
 			Envar("GBE_GITHUB_TOKEN").
 			String(),
-		githubOrgs: kingpin.Flag("github.orgs", "Space seperated list of GitHub Organizations").
+		githubOrgs: kingpin.Flag("github.orgs", "Space separated list of GitHub Organizations").
 			Default("").
 			Envar("GBE_GITHUB_ORGS").
 			String(),
-		disabledCollectors: kingpin.Flag("disabled.collectors", "Space seperated list of Disabled Collectors").
+		disabledCollectors: kingpin.Flag("disabled.collectors", "Space separated list of Disabled Collectors").
 			Default("").
 			Envar("GBE_DISABLED_COLLECTORS").
 			String(),
-		logLevel: kingpin.Flag("log.level", "Sets the loglevel. Valid levels are debug, info, warn, error").
+		logLevel: kingpin.Flag("log.level", "Sets the log level. Valid levels are debug, info, warn, error").
 			Default("info").
 			Envar("GBE_LOG_LEVEL").
 			String(),

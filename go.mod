@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/go-kit/kit v0.12.0
 	github.com/go-kit/log v0.2.1
-	github.com/google/go-github/v43 v43.0.0
+	github.com/google/go-github/v50 v50.1.0
 	github.com/prometheus/client_golang v1.14.0
 	github.com/prometheus/common v0.41.0
 	golang.org/x/oauth2 v0.6.0
