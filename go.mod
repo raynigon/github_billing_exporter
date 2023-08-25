@@ -3,7 +3,7 @@ module github.com/raynigon/github_billing_exporter/v2
 go 1.17
 
 require (
-	github.com/go-kit/kit v0.12.0
+	github.com/go-kit/kit v0.13.0
 	github.com/go-kit/log v0.2.1
 	github.com/google/go-github/v50 v50.2.0
 	github.com/prometheus/client_golang v1.16.0
