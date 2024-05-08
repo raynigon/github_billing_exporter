@@ -12,7 +12,7 @@ else
 endif
 
 PROMU 		 	:= $(FIRST_GOPATH)/bin/promu
-PROMU_VERSION 	?= 0.14.0
+PROMU_VERSION 	?= 0.15.0
 PROMU_URL 		:= https://github.com/prometheus/promu/releases/download/v$(PROMU_VERSION)/promu-$(PROMU_VERSION).$(GO_BUILD_PLATFORM).tar.gz
 
 pkgs   			=  ./...
