@@ -11,8 +11,8 @@ import (
 	"github.com/raynigon/github_billing_exporter/v2/pkg/config"
 	"github.com/raynigon/github_billing_exporter/v2/pkg/web"
 
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/prometheus/common/version"
 )
 
@@ -38,7 +38,6 @@ func registerCollectors(logger log.Logger, config collector.CollectorConfig) {
 	}
 
 	prometheus.MustRegister(collector)
-	prometheus.MustRegister(version.NewCollector("github_billing_exporter"))
 }
 
 func waitForTermination(logger log.Logger) {
