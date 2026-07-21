@@ -16,9 +16,9 @@ func filter(ss []string, test func(string) bool) (ret []string) {
 }
 
 func (cfg GitHubBillingExporterConfig) GetCollectorConfig() collector.CollectorConfig {
-	orgs := strings.Split(*cfg.githubOrgs, " ")
+	orgs := strings.Split(cfg.GithubOrgs, " ")
 	orgs = filter(orgs, func(item string) bool { return item != "" })
-	disabledCollectors := strings.Split(*cfg.disabledCollectors, " ")
+	disabledCollectors := strings.Split(cfg.DisabledCollectors, " ")
 	disabledCollectors = filter(disabledCollectors, func(item string) bool { return item != "" })
 	return collector.CollectorConfig{
 		Logger:             cfg.GetLogger(),

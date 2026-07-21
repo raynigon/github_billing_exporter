@@ -11,7 +11,7 @@ import (
 
 func (cfg GitHubBillingExporterConfig) GetLogger() log.Logger {
 	var out *os.File
-	switch strings.ToLower(*cfg.logOutput) {
+	switch strings.ToLower(cfg.LogOutput) {
 	case "stderr":
 		out = os.Stderr
 	case "stdout":
@@ -20,7 +20,7 @@ func (cfg GitHubBillingExporterConfig) GetLogger() log.Logger {
 		out = os.Stdout
 	}
 	var logCreator func(io.Writer) log.Logger
-	switch strings.ToLower(*cfg.logFormat) {
+	switch strings.ToLower(cfg.LogFormat) {
 	case "json":
 		logCreator = log.NewJSONLogger
 	case "logfmt":
@@ -34,7 +34,7 @@ func (cfg GitHubBillingExporterConfig) GetLogger() log.Logger {
 
 	// set loglevel
 	var loglevelFilterOpt level.Option
-	switch strings.ToLower(*cfg.logLevel) {
+	switch strings.ToLower(cfg.LogLevel) {
 	case "debug":
 		loglevelFilterOpt = level.AllowDebug()
 	case "info":

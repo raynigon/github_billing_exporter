@@ -8,12 +8,12 @@ import (
 )
 
 func (cfg GitHubBillingExporterConfig) GetGitHubClient() *github.Client {
-	if *cfg.githubToken == "" {
+	if cfg.GithubToken == "" {
 		return github.NewClient(nil)
 	}
 	ctx := context.Background()
 	tokenSource := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: *cfg.githubToken},
+		&oauth2.Token{AccessToken: cfg.GithubToken},
 	)
 	httpClient := oauth2.NewClient(ctx, tokenSource)
 	return github.NewClient(httpClient)
