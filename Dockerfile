@@ -4,7 +4,7 @@ ARG TARGETPLATFORM
 
 LABEL maintainer="Simon Schneider <dev@raynigon.com>"
 
-COPY github_billing_exporter /bin/github_billing_exporter
+COPY $TARGETPLATFORM/github_billing_exporter /bin/github_billing_exporter
 
 EXPOSE      9776
 USER        nobody
