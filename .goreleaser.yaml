@@ -10,8 +10,12 @@ builds:
     - windows
     - darwin
     goarch:
-    - amd64
-    - "386"
+      - amd64
+      - arm64
+      - "386"
+      - arm
+    goarm:
+      - "7"
     env:
       - CGO_ENABLED=0
       - GO111MODULE=on
@@ -24,17 +28,22 @@ builds:
     flags: -tags netgo -installsuffix netgo
     binary: github_billing_exporter
     hooks: {}
-dockers:
+dockers_v2:
   - dockerfile: "./Dockerfile"
     ids:
       - github_billing_exporter
-    image_templates:
-    - "ghcr.io/raynigon/github_billing_exporter:latest"
-    - "ghcr.io/raynigon/github_billing_exporter:{{ .Tag }}"
-    - "ghcr.io/raynigon/github_billing_exporter:v{{ .Major }}"
-    - "ghcr.io/raynigon/github-billing-exporter:latest"
-    - "ghcr.io/raynigon/github-billing-exporter:{{ .Tag }}"
-    - "ghcr.io/raynigon/github-billing-exporter:v{{ .Major }}"
+    images:
+    - "ghcr.io/raynigon/github_billing_exporter"
+    - "ghcr.io/raynigon/github-billing-exporter"
+    tags:
+      - "latest"
+      - "{{ .Tag }}"
+      - "v{{ .Major }}"
+    platforms:
+      - linux/amd64
+      - linux/arm64
+      - linux/386
+      - linux/arm/v7
 archives:
   - id: github_billing_exporter
     builds:
