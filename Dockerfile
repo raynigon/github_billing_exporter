@@ -1,6 +1,7 @@
-ARG ARCH="amd64"
-ARG OS="linux"
-FROM quay.io/prometheus/busybox-${OS}-${ARCH}:glibc
+FROM quay.io/prometheus/busybox:glibc
+
+ARG TARGETPLATFORM
+
 LABEL maintainer="Simon Schneider <dev@raynigon.com>"
 
 COPY github_billing_exporter /bin/github_billing_exporter
